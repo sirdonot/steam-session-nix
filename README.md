@@ -28,3 +28,5 @@ Adding steam-session to your environment.systemPackages
 }
 ```
 After rebuilding, steam-session will be installed on your system. 
+
+A shoutout to [shahnawazshahin](https://github.com/shahnawazshahin) for making his [steam-using-gamescope-guide](https://github.com/shahnawazshahin), this flake is based on his scripts.
