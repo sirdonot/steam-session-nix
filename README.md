@@ -31,4 +31,4 @@ After rebuilding, steam-session will be installed on your system.
 
 > [!NOTE]
 >
-> A shout-out to [shahnawazshahin](https://github.com/shahnawazshahin) for making his [steam-using-gamescope-guide](https://github.com/shahnawazshahin), this flake is based on his scripts.
+> A shout-out to [shahnawazshahin](https://github.com/shahnawazshahin) for making his [steam-using-gamescope-guide](https://github.com/shahnawazshahin/steam-using-gamescope-guide), this flake is based on his scripts.
