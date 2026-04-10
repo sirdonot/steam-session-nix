@@ -36,4 +36,4 @@ export GAMESCOPE_DISABLE_ASYNC_FLIPS=1
 export vk_xwayland_wait_ready=false
 
 gamescope \
-  --steam --mangoapp -- steam -steamdeck -steamos3 &>"$HOME/.cache/steam-session"
+  --steam --mangoapp -- steam -steamdeck -steamos3 -noverifyfiles &>"$HOME/.cache/steam-session"
