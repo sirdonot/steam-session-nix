@@ -1,0 +1,8 @@
+#!/bin/bash
+
+# As this is running on a standard Linux install
+# state that no updates configured for this bios
+# and exit
+echo "Unavailable on NixOS"
+exit 0
+
