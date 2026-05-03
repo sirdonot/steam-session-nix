@@ -1,0 +1,77 @@
+#!/bin/bash
+
+# Reads variables set in gamescope.conf
+CONFIG_FILE="$HOME/.config/gamescope/gamescope.conf"
+
+MONITOR=$(awk -F'[=,]' '/^monitor =/ {print $2}' "$CONFIG_FILE" | xargs)
+SPECS=$(awk -F'[=,]' '/^monitor =/ {print $3}' "$CONFIG_FILE" | xargs)
+
+# If only monitor is set to auto, set only the monitor specifications.
+if [[ "$MONITOR" == "auto" && "$SPECS" != "auto" ]]; then
+  WIDTH=$(echo "$SPECS" | awk -F'[x@]' '{print $1}')
+  HEIGHT=$(echo "$SPECS" | awk -F'[x@]' '{print $2}')
+  REFRESH=$(echo "$SPECS" | awk -F'[x@]' '{print $3}')
+  SCREEN_VARIABLE="-W $WIDTH -H $HEIGHT -r $REFRESH"
+
+# Same as first but reversed.
+elif [[ "$MONITOR" != "auto" && "$SPECS" == "auto" ]]; then
+  SCREEN_VARIABLE="-O $MONITOR"
+
+# If both set, proceed.
+elif [[ "$MONITOR" != "auto" && "$SPECS" != "auto" ]]; then
+  WIDTH=$(echo "$SPECS" | awk -F'[x@]' '{print $1}')
+  HEIGHT=$(echo "$SPECS" | awk -F'[x@]' '{print $2}')
+  REFRESH=$(echo "$SPECS" | awk -F'[x@]' '{print $3}')
+  SCREEN_VARIABLE="-O $MONITOR -W $WIDTH -H $HEIGHT -r $REFRESH"
+
+# If both auto, set nothing.
+else
+  SCREEN_VARIABLE=""
+fi
+
+# Grab cursor and keyboard settings
+CURSOR_THEME=$(awk -F'=' '/^cursor_theme =/ {print $2}' "$CONFIG_FILE" | xargs)
+CURSOR_SIZE=$(awk -F'=' '/^cursor_size =/ {print $2}' "$CONFIG_FILE" | xargs)
+KB_LAYOUT=$(awk -F'=' '/^kb_layout =/ {print $2}' "$CONFIG_FILE" | xargs)
+KB_VARIANT=$(awk -F'=' '/^kb_variant =/ {print $2}' "$CONFIG_FILE" | xargs)
+
+# Cursor envs
+export XCURSOR_THEME=$CURSOR_THEME
+export XCURSOR_SIE=$CURSOR_SIZE
+
+# Keyboard envs
+export XKB_DEFAULT_LAYOUT=$KB_LAYOUT
+export XKB_DEFAULT_VARIANT=$KB_VARIANT
+
+# Setting this variable will enable additional
+# options under settings in SteamOS mode, including the option
+# to 'Automatically Set Resolution' option, which can be turned
+# off to set the resolution manually.
+export GAMESCOPE_MODE_SAVE_FILE="$HOME/.config/gamescope/modes.cfg"
+
+# Window managers sets this to wayland but apps using Gamescope must use x11
+export XDG_SESSION_TYPE=x11
+
+# Force Qt applications to run under xwayland
+export QT_QPA_PLATFORM=xcb
+
+# Moves OpenGL command processing to a separate CPU thread instead of the main game thread.
+export mesa_glthread=true
+
+# Can reduce CPU use for apps that are known to be error free.
+export MESA_NO_ERROR=1
+
+# This should be used by default by gamescope. Cannot hurt to force it anyway.
+# Reported better framelimiting with this enabled
+export ENABLE_GAMESCOPE_WSI=1
+
+# Some environment variables by default (taken from Deck session)
+export SDL_VIDEO_MINIMIZE_ON_FOCUS_LOSS=0
+
+# Temporary crutch until dummy plane interactions / etc are figured out
+export GAMESCOPE_DISABLE_ASYNC_FLIPS=1
+
+# Don't wait for buffers to idle on the client side before sending them to gamescope
+export vk_xwayland_wait_ready=false
+
+gamescope --steam --mangoapp $SCREEN_VARIABLE -- steam -steamdeck -steamos3
