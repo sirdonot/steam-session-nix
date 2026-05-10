@@ -3,32 +3,6 @@
 # Reads variables set in gamescope.conf
 CONFIG_FILE="$HOME/.config/gamescope/gamescope.conf"
 
-MONITOR=$(awk -F'[=,]' '/^monitor =/ {print $2}' "$CONFIG_FILE" | xargs)
-SPECS=$(awk -F'[=,]' '/^monitor =/ {print $3}' "$CONFIG_FILE" | xargs)
-
-# If only monitor is set to auto, set only the monitor specifications.
-if [[ "$MONITOR" == "auto" && "$SPECS" != "auto" ]]; then
-  WIDTH=$(echo "$SPECS" | awk -F'[x@]' '{print $1}')
-  HEIGHT=$(echo "$SPECS" | awk -F'[x@]' '{print $2}')
-  REFRESH=$(echo "$SPECS" | awk -F'[x@]' '{print $3}')
-  SCREEN_VARIABLE="-W $WIDTH -H $HEIGHT -r $REFRESH"
-
-# Same as first but reversed.
-elif [[ "$MONITOR" != "auto" && "$SPECS" == "auto" ]]; then
-  SCREEN_VARIABLE="-O $MONITOR"
-
-# If both set, proceed.
-elif [[ "$MONITOR" != "auto" && "$SPECS" != "auto" ]]; then
-  WIDTH=$(echo "$SPECS" | awk -F'[x@]' '{print $1}')
-  HEIGHT=$(echo "$SPECS" | awk -F'[x@]' '{print $2}')
-  REFRESH=$(echo "$SPECS" | awk -F'[x@]' '{print $3}')
-  SCREEN_VARIABLE="-O $MONITOR -W $WIDTH -H $HEIGHT -r $REFRESH"
-
-# If both auto, set nothing.
-else
-  SCREEN_VARIABLE=""
-fi
-
 # Grab cursor and keyboard settings
 CURSOR_THEME=$(awk -F'=' '/^cursor_theme =/ {print $2}' "$CONFIG_FILE" | xargs)
 CURSOR_SIZE=$(awk -F'=' '/^cursor_size =/ {print $2}' "$CONFIG_FILE" | xargs)
@@ -74,4 +48,4 @@ export GAMESCOPE_DISABLE_ASYNC_FLIPS=1
 # Don't wait for buffers to idle on the client side before sending them to gamescope
 export vk_xwayland_wait_ready=false
 
-gamescope --steam --mangoapp $SCREEN_VARIABLE -- steam -steamdeck -steamos3
+gamescope --steam --mangoapp -- steam -steamdeck -steamos3
